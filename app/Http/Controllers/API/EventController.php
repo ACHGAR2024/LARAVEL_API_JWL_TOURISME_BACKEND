@@ -20,7 +20,7 @@ class EventController extends Controller
     public function store(Request $request)
     {
         // Validation des données de la requête
-        $request->validate([
+        $validatedData = $request->validate([
             'title_event' => 'required|string|max:255',
             'content_event' => 'required|string',
             'event_date' => 'required|date',
@@ -31,18 +31,16 @@ class EventController extends Controller
             'user_id' => 'required|exists:users,id',
         ]);
 
-        $input = $request->except('photo_event');
-
         // Gestion de l'upload de l'image
         if ($request->hasFile('photo_event')) {
             $image = $request->file('photo_event');
             $name = time() . '_' . $image->getClientOriginalName();
             $filePath = $image->storeAs('images', $name, 'public');
-            $input['photo_event'] = '/storage/' . $filePath;
+            $validatedData['photo_event'] = '/storage/' . $filePath;
         }
 
         // Création de l'événement
-        $event = Event::create($input);
+        $event = Event::create($validatedData);
 
         return response()->json(['event' => $event, 'message' => 'Event created successfully']);
     }
@@ -73,10 +71,12 @@ class EventController extends Controller
             'user_id' => 'required|exists:users,id',
         ]);
 
+        // Extraction des données de la requête
         $input = $request->except('photo_event');
 
         // Si une nouvelle image est téléchargée, la traiter et la sauvegarder
         if ($request->hasFile('photo_event')) {
+            // Générer un nom unique pour l'image
             $filenameWithExt = $request->file('photo_event')->getClientOriginalName();
             $filenameWithoutExt = pathinfo($filenameWithExt, PATHINFO_FILENAME);
             $extension = $request->file('photo_event')->getClientOriginalExtension();
@@ -96,7 +96,7 @@ class EventController extends Controller
         $event->update($input);
 
         // Retourner une réponse JSON avec l'événement mis à jour et un message de succès
-        return response()->json($event, 200);
+        return response()->json(['event' => $event, 'message' => 'Event updated successfully'], 200);
     }
 
     // Méthode pour supprimer un événement

@@ -12,8 +12,8 @@ class PlaceReservationController extends Controller
     // Méthode pour récupérer toutes les réservations
     public function index()
     {
-        $reservations = PlaceReservation::orderBy('created_at', 'desc')->get();
-        return response()->json(['reservations' => $reservations]);
+        $places_reservations = PlaceReservation::orderBy('created_at', 'desc')->get();
+        return response()->json(['places_reservations' => $places_reservations]);
     }
 
     // Méthode pour créer une nouvelle réservation

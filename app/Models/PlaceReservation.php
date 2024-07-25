@@ -9,6 +9,8 @@ class PlaceReservation extends Model
 {
     use HasFactory;
 
+    protected $table = 'places_reservations'; // Spécifiez le nom correct de la table
+
     protected $fillable = [
         'name_place_tiket',
         'address_place',

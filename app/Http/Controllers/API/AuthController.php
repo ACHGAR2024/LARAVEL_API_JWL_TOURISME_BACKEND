@@ -135,10 +135,17 @@ if ($request->hasFile('image')) {
     {
         $authenticatedUser = Auth::user();
     
+        // Vérifiez si l'utilisateur authentifié est un administrateur
+        if ($authenticatedUser->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+    
+        // Supprimer l'utilisateur
         $user->delete();
     
         return response()->json(['message' => 'User deleted successfully']);
     }
+    
     
         
 

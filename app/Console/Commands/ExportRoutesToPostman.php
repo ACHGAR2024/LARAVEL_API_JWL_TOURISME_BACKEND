@@ -30,9 +30,22 @@ class ExportRoutesToPostman extends Command
         foreach ($routes as $route) {
             $uri = $route->uri();
             if (strpos($uri, 'api/') === 0) {  // Only include routes starting with 'api/'
+                $routeName = $route->getName();
+                if (!$routeName) {
+                    $action = $route->getActionName();
+                    $actionParts = explode('@', $action);
+                    if (count($actionParts) == 2) {
+                        $controller = class_basename($actionParts[0]);
+                        $method = $actionParts[1];
+                        $routeName = strtolower($controller . '.' . $method);
+                    } else {
+                        $routeName = $uri;
+                    }
+                }
+
                 $postmanRoutes[] = [
                     'method' => $route->methods()[0],
-                    'name' => $route->getName() ?: $uri,
+                    'name' => $routeName,
                     'uri' => $uri,
                     'action' => $route->getActionName(),
                 ];
@@ -53,7 +66,7 @@ class ExportRoutesToPostman extends Command
             }
 
             $collections[$collectionName]['item'][] = [
-                'name' => $route['name'],
+                'name' => $collectionName . '-' .$route['method'],// Use the route name as the item name //
                 'request' => [
                     'method' => $route['method'],
                     'header' => [],

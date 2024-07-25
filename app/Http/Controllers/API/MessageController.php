@@ -141,7 +141,7 @@ class MessageController extends Controller
 
         $message = Message::findOrFail($id);
         $message->update($request->all());
-        return response()->json($message);
+        return response()->json("Message updated successfully", 200);
     }
 
     // Remove the specified message from storage.
@@ -149,6 +149,6 @@ class MessageController extends Controller
     {
         $message = Message::findOrFail($id);
         $message->delete();
-        return response()->json(null, 204);
+        return response()->json('Message deleted successfully', 200);
     }
 }
