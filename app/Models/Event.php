@@ -15,6 +15,7 @@ class Event extends Model
         'event_date',
         'event_end_date',
         'address_event',
+        'price_event',
         'photo_event',
         'publication_date',
         'user_id'

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB; 
 use Illuminate\Support\Facades\Auth;
 
+
 class PlaceController extends Controller
 {
     // Méthode pour récupérer toutes les annonces
@@ -135,6 +136,8 @@ class PlaceController extends Controller
     }
     
     
+
+
     // Méthode pour supprimer une annonce
     public function destroy($id)
     {

@@ -46,6 +46,7 @@ class CombinedSeeder extends Seeder
                 'event_date' => $faker->date,
                 'event_end_date' => $faker->date,
                 'address_event' => $faker->address,
+                'price_event' => $faker->randomFloat(2, 10, 500),
                 'photo_event' => $faker->imageUrl(),
                 'publication_date' => $faker->date,
                 'user_id' => $faker->randomElement($userIds),

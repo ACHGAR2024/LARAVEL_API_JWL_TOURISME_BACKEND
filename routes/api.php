@@ -28,6 +28,9 @@ Route::middleware('auth:api')->group(function () {
     Route::post('places/{place}/photos', [PhotoController::class, 'store']);
     Route::put('places/{place}/photos/{photo}', [PhotoController::class, 'update']);
     Route::delete('places/{place}/photos/{photo}', [PhotoController::class, 'destroy']);
+    // destroyAllPhotos : Supprimer toutes les photos d'une place
+    Route::delete('places/{place}/photos', [PhotoController::class, 'destroyAllPhotos']);
+
 
     Route::post('categories', [CategoryController::class, 'store']);
     Route::put('categories/{category}', [CategoryController::class, 'update']);   

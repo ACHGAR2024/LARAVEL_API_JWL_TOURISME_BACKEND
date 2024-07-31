@@ -18,6 +18,7 @@ class CreateEventsTable extends Migration
             $table->date('event_date')->nullable();
             $table->date('event_end_date')->nullable();
             $table->string('address_event', 255)->nullable();
+            $table->decimal('price_event', 10, 2)->nullable();
             $table->string('photo_event', 255)->nullable();
             $table->date('publication_date')->nullable();
             $table->unsignedInteger('user_id');
