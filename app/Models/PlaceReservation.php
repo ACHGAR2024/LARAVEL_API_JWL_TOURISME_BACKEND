@@ -14,6 +14,7 @@ class PlaceReservation extends Model
     protected $fillable = [
         'name_place_tiket',
         'address_place',
+        'telephone',
         'reservation_start_date',
         'reservation_end_date',
         'id_events'

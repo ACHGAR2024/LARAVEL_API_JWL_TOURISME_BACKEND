@@ -68,69 +68,71 @@ class AuthController extends Controller
     }
 
     public function update(Request $request, User $user)
-    {
-        // Récupère l'utilisateur authentifié
-        $authenticatedUser = Auth::user();
+{
+    // Récupère l'utilisateur authentifié
+    $authenticatedUser = Auth::user();
 
-        // Vérifie que l'utilisateur authentifié peut effectuer cette action
-        if ($authenticatedUser->id !== $user->id) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
-        // Sauvegarde temporaire de l'ancien chemin de l'image
-        $file_temp = $user->image;
-
-        // Validation des données reçues
-        $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|email|unique:users,email,' . $user->id,
-            'password' => 'sometimes|string|min:6',
-            'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048', // Taille maximale de 2MB pour les images
-        ]);
-
-        // Préparation des données à mettre à jour, en excluant potentiellement l'image
-        $input = $request->except('image', 'password');
-
-        // Si un nouveau mot de passe est fourni, le hasher et l'ajouter aux données à sauvegarder
-        if ($request->filled('password')) {
-            $input['password'] = bcrypt($request->password);
-        }
-
-        // Si une nouvelle image est téléchargée, la traiter et la sauvegarder
-if ($request->hasFile('image')) {
-    $filenameWithExt = $request->file('image')->getClientOriginalName();
-    $filenameWithoutExt = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-    $extension = $request->file('image')->getClientOriginalExtension();
-    $filename = $filenameWithoutExt . '_' . time() . '.' . $extension;
-    $path = $request->file('image')->storeAs('images', $filename, 'public');
-
-    // Supprimer l'ancienne image si elle existe
-    if ($file_temp) {
-        Storage::disk('public')->delete('images/' . basename($file_temp));
+    // Vérifie que l'utilisateur authentifié peut effectuer cette action
+    if ($authenticatedUser->id !== $user->id) {
+        return response()->json(['error' => 'Unauthorized'], 403);
     }
 
-    // Mettre à jour le chemin de la nouvelle image dans les données à sauvegarder
-    $input['image'] = '/storage/images/' . $filename;
+    // Sauvegarde temporaire de l'ancien chemin de l'image
+    $file_temp = $user->image;
+
+    // Validation des données reçues
+    $request->validate([
+        'name' => 'sometimes|string|max:255',
+        'email' => 'sometimes|email|unique:users,email,' . $user->id,
+        'password' => 'sometimes|string|min:6',
+        'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048', // Taille maximale de 2MB pour les images
+    ]);
+
+    // Préparation des données à mettre à jour, en excluant potentiellement l'image
+    $input = $request->except('image', 'password');
+
+    // Si un nouveau mot de passe est fourni, le hasher et l'ajouter aux données à sauvegarder
+    if ($request->filled('password')) {
+        $input['password'] = bcrypt($request->password);
+    }
+
+    // Si une nouvelle image est téléchargée, la traiter et la sauvegarder
+    if ($request->hasFile('image')) {
+        $filenameWithExt = $request->file('image')->getClientOriginalName();
+        $filenameWithoutExt = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+        $extension = $request->file('image')->getClientOriginalExtension();
+        $filename = $filenameWithoutExt . '_' . time() . '.' . $extension;
+        $path = $request->file('image')->storeAs('images', $filename, 'public');
+
+        // Supprimer l'ancienne image si elle existe
+        if ($file_temp) {
+            Storage::disk('public')->delete('images/' . basename($file_temp));
+        }
+
+        // Mettre à jour le chemin de la nouvelle image dans les données à sauvegarder
+        $input['image'] = '/storage/images/' . $filename;
+    }
+
+    // Mettre à jour l'utilisateur avec les nouvelles données
+    $user->update($input);
+
+    // Construire l'URL de l'image mise à jour
+    if (isset($input['image'])) {
+        $imageUrl = asset($input['image']);
+        // Ajouter l'URL de l'image à l'objet utilisateur mis à jour
+        $user->image = $imageUrl;
+    }
+
+    // Retourner une réponse JSON avec l'utilisateur mis à jour et un message de succès
+    $responseData = [
+        'user' => $user,
+        'message' => 'User updated successfully'
+    ];
+
+    return response()->json($responseData, 200);
 }
 
 
-        // Mettre à jour l'utilisateur avec les nouvelles données
-        $user->update($input);
-
-        // Construire l'URL de l'image mise à jour
-        $imageUrl = asset($input['image']);
-
-        // Ajouter l'URL de l'image à l'objet utilisateur mis à jour
-        $user->image = $imageUrl;
-
-        // Retourner une réponse JSON avec l'utilisateur mis à jour et un message de succès
-        $responseData = [
-            'user' => $user,
-            'message' => 'User updated successfully'
-        ];
-
-        return response()->json($responseData, 200);
-    }
     public function destroy(User $user)
     {
         $authenticatedUser = Auth::user();
@@ -146,7 +148,30 @@ if ($request->hasFile('image')) {
         return response()->json(['message' => 'User deleted successfully']);
     }
     
+   // Ajoutez cette méthode dans votre AuthController
+public function updateRole(Request $request, $id)
+{
+    $user = User::findOrFail($id);
     
+    // Vérifiez si l'utilisateur est autorisé à effectuer cette action
+    if (Auth::user()->role !== 'admin') {
+        return response()->json(['message' => 'Unauthorized'], 403);
+    }
+
+    $validator = Validator::make($request->all(), [
+        'role' => 'required|string|in:user,agent'
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json($validator->errors(), 422);
+    }
+
+    $user->role = $request->role;
+    $user->save();
+
+    return response()->json(['message' => 'Role updated successfully', 'user' => $user]);
+}
+ 
         
 
     

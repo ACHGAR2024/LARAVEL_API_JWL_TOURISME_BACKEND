@@ -31,6 +31,8 @@ Route::middleware('auth:api')->group(function () {
     // destroyAllPhotos : Supprimer toutes les photos d'une place
     Route::delete('places/{place}/photos', [PhotoController::class, 'destroyAllPhotos']);
 
+    
+
 
     Route::post('categories', [CategoryController::class, 'store']);
     Route::put('categories/{category}', [CategoryController::class, 'update']);   
@@ -64,6 +66,9 @@ Route::middleware('auth:api')->group(function () {
     
     // Route pour récupérer l'utilisateur actuellement authentifié
     Route::get('user', [UserController::class, 'currentUser']);
+
+    // Route pour mettre à jour le role de l'utilisateur
+    Route::patch('users/{id}/role', [AuthController::class, 'updateRole']);
 
     //Fin des routes avec middleware
     

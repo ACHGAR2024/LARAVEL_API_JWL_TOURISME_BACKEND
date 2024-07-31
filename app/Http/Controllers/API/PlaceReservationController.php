@@ -23,6 +23,7 @@ class PlaceReservationController extends Controller
         $request->validate([
             'name_place_tiket' => 'nullable|string|max:255',
             'address_place' => 'nullable|string|max:255',
+            'telephone' => 'nullable|string|max:255',
             'reservation_start_date' => 'nullable|date',
             'reservation_end_date' => 'nullable|date',
             'id_events' => 'required|exists:events,id',
@@ -51,6 +52,7 @@ class PlaceReservationController extends Controller
         $request->validate([
             'name_place_tiket' => 'nullable|string|max:255',
             'address_place' => 'nullable|string|max:255',
+            'telephone' => 'nullable|string|max:255',
             'reservation_start_date' => 'nullable|date',
             'reservation_end_date' => 'nullable|date',
             'id_events' => 'required|exists:events,id',
