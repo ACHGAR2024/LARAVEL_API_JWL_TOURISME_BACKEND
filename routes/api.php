@@ -42,7 +42,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('messages', [MessageController::class, 'store']);
     Route::post('messages/favorite', [MessageController::class, 'addFavorite']);
     Route::post('messages/report', [MessageController::class, 'report']);
-    Route::get('messages', [MessageController::class, 'index']);
+    
     Route::delete('messages/{message}', [MessageController::class, 'destroy']);
 
 
@@ -80,6 +80,8 @@ Route::middleware('auth:api')->group(function () {
 Route::get('places', [PlaceController::class, 'index']);
 Route::get('places/{place}', [PlaceController::class, 'show']);
 Route::get('places/category/{categoryId}', [PlaceController::class, 'getPlacesByCategory']);
+
+Route::get('messages', [MessageController::class, 'index']);
 
 // Routes des photos accessibles publiquement
 Route::get('places/{place}/photos', [PhotoController::class, 'index']);
